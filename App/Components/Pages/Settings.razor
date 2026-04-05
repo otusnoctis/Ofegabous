@@ -1,0 +1,211 @@
+@page "/settings"
+@implements IDisposable
+@inject AppUpdateService UpdateService
+
+<PageTitle>Settings</PageTitle>
+
+<h1>Settings</h1>
+
+@if (_snapshot is null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <div class="settings-grid">
+        <section class="settings-card">
+            <h2>Versiones</h2>
+            <dl class="settings-details">
+                <dt>App</dt>
+                <dd>@_snapshot.AppVersion</dd>
+                <dt>Velopack</dt>
+                <dd>@_snapshot.VelopackVersion</dd>
+                <dt>Repositorio de updates</dt>
+                <dd>@_snapshot.RepositoryUrl</dd>
+            </dl>
+        </section>
+
+        <section class="settings-card">
+            <div class="settings-header">
+                <div>
+                    <h2>Actualizaciones</h2>
+                    <p class="text-body-secondary mb-0">@GetStatusSummary()</p>
+                </div>
+                @if (_snapshot.IsUpdateAvailable)
+                {
+                    <span class="badge text-bg-warning">Pendiente</span>
+                }
+                else if (!_snapshot.IsDevMode)
+                {
+                    <span class="badge text-bg-success">Al dia</span>
+                }
+            </div>
+
+            <div class="@GetUpdateAlertClass()" role="status">
+                <strong>@GetUpdateHeadline()</strong>
+                <div>@_snapshot.UpdateMessage</div>
+            </div>
+
+            @if (_snapshot.LastCheckedAt is not null)
+            {
+                <p class="text-body-secondary mt-3 mb-0">
+                    Ultima comprobacion: @_snapshot.LastCheckedAt.Value.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")
+                </p>
+            }
+
+            @if (!_snapshot.IsDevMode)
+            {
+                <div class="mt-3 d-flex gap-2 flex-wrap">
+                    @if (_snapshot.IsUpdateAvailable)
+                    {
+                        <button class="btn btn-primary"
+                                disabled="@(_isBusy || !_snapshot.CanCheckUpdates)"
+                                @onclick="UpdateNowAsync">
+                            @(_isBusy ? "Procesando..." : "Actualizar ahora")
+                        </button>
+                    }
+
+                    <button class="btn btn-outline-primary"
+                            disabled="@(_isBusy || !_snapshot.CanCheckUpdates)"
+                            @onclick="CheckForUpdatesAsync">
+                        @(_isBusy ? "Comprobando..." : "Buscar de nuevo")
+                    </button>
+                </div>
+            }
+        </section>
+
+        <section class="settings-card settings-card-wide">
+            <h2>Sesion</h2>
+            <p class="mb-0">@_snapshot.StartupMessage</p>
+            @if (!string.IsNullOrWhiteSpace(_progressMessage))
+            {
+                <p class="text-primary fw-semibold mt-3 mb-0">@_progressMessage</p>
+            }
+        </section>
+    </div>
+}
+
+@code {
+    private AppUpdateSnapshot? _snapshot;
+    private bool _isBusy;
+    private string _progressMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _snapshot = UpdateService.GetSnapshot();
+        UpdateService.SnapshotChanged += HandleSnapshotChanged;
+        await UpdateService.EnsureStartupCheckAsync();
+        _snapshot = UpdateService.GetSnapshot();
+    }
+
+    private async Task CheckForUpdatesAsync()
+    {
+        if (_snapshot is null || !_snapshot.CanCheckUpdates || _isBusy)
+        {
+            return;
+        }
+
+        _isBusy = true;
+        _progressMessage = string.Empty;
+        StateHasChanged();
+
+        _snapshot = await UpdateService.CheckForUpdatesAsync(message =>
+        {
+            _progressMessage = message;
+            _ = InvokeAsync(StateHasChanged);
+        });
+
+        _progressMessage = string.Empty;
+        _isBusy = false;
+    }
+
+    private async Task UpdateNowAsync()
+    {
+        if (_snapshot is null || !_snapshot.CanCheckUpdates || _isBusy)
+        {
+            return;
+        }
+
+        _isBusy = true;
+        _progressMessage = string.Empty;
+        StateHasChanged();
+
+        var result = await UpdateService.DownloadAndApplyAsync(message =>
+        {
+            _progressMessage = message;
+            _ = InvokeAsync(StateHasChanged);
+        });
+
+        _snapshot = result.Snapshot;
+        _progressMessage = result.ProgressMessage;
+        _isBusy = false;
+    }
+
+    private void HandleSnapshotChanged()
+    {
+        _snapshot = UpdateService.GetSnapshot();
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    private string GetStatusSummary()
+    {
+        if (_snapshot is null)
+        {
+            return "Cargando estado de actualizacion.";
+        }
+
+        if (_snapshot.IsDevMode)
+        {
+            return "Las actualizaciones no se ejecutan en development mode.";
+        }
+
+        if (!_snapshot.IsInstalled)
+        {
+            return "La app no esta instalada mediante Velopack, asi que el update runtime esta deshabilitado.";
+        }
+
+        if (_snapshot.IsUpdateAvailable)
+        {
+            return $"Hay una nueva version disponible: {_snapshot.AvailableVersion}.";
+        }
+
+        return "No hay actualizaciones pendientes.";
+    }
+
+    private string GetUpdateHeadline()
+    {
+        if (_snapshot is null)
+        {
+            return "Cargando";
+        }
+
+        if (_snapshot.IsDevMode)
+        {
+            return "Actualizaciones deshabilitadas";
+        }
+
+        if (_snapshot.IsUpdateAvailable)
+        {
+            return $"Actualizacion disponible: {_snapshot.AvailableVersion}";
+        }
+
+        return "Aplicacion al dia";
+    }
+
+    private string GetUpdateAlertClass()
+    {
+        if (_snapshot is null || _snapshot.IsDevMode || !_snapshot.IsInstalled)
+        {
+            return "alert alert-secondary mb-0";
+        }
+
+        return _snapshot.IsUpdateAvailable
+            ? "alert alert-warning mb-0"
+            : "alert alert-success mb-0";
+    }
+
+    public void Dispose()
+    {
+        UpdateService.SnapshotChanged -= HandleSnapshotChanged;
+    }
+}

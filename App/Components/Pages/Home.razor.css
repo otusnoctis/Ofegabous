@@ -1,0 +1,74 @@
+.hero-panel {
+    padding: 1.5rem 1.6rem;
+    border-radius: 28px;
+    color: #f7fbf8;
+    background: #1f6fe5;
+    box-shadow: 0 24px 60px rgba(17, 55, 111, 0.22);
+}
+
+.eyebrow {
+    margin: 0 0 0.75rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(240, 248, 243, 0.8);
+}
+
+.hero-panel h1 {
+    margin-bottom: 0.75rem;
+    font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.hero-copy {
+    max-width: 60rem;
+    margin-bottom: 0;
+    font-size: 1.02rem;
+    line-height: 1.7;
+}
+
+.home-grid {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.2rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.content-card {
+    padding: 1.25rem;
+    border: 1px solid rgba(31, 111, 229, 0.14);
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 14px 30px rgba(32, 48, 39, 0.08);
+}
+
+.content-card h2 {
+    margin-bottom: 0.9rem;
+    font-size: 1.05rem;
+}
+
+.content-card ul {
+    margin-bottom: 0;
+    padding-left: 1.1rem;
+    line-height: 1.7;
+}
+
+.detail-list {
+    display: grid;
+    gap: 0.55rem;
+    margin-bottom: 0;
+}
+
+.detail-list dt {
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #235892;
+}
+
+.detail-list dd {
+    margin-bottom: 0.35rem;
+    color: #203027;
+    overflow-wrap: anywhere;
+}

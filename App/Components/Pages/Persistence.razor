@@ -1,0 +1,112 @@
+@page "/persistence"
+@inject PersistenceStore PersistenceStore
+@inject TemplateEnvironment Environment
+
+<PageTitle>Persistence</PageTitle>
+
+<h1>Persistence example</h1>
+
+<p class="page-intro">
+    Esta pagina demuestra la persistencia local de la plantilla. El contenido del editor se guarda en un fichero JSON
+    dentro del directorio `data`, sin backend y sin base de datos.
+</p>
+
+<div class="persistence-grid">
+    <section class="info-card">
+        <h2>Como funciona</h2>
+        <ul>
+            <li>El servicio `PersistenceStore` lee y escribe un documento JSON.</li>
+            <li>En desarrollo, el fichero vive en la raiz del repo para facilitar inspeccion y versionado del ejemplo.</li>
+            <li>En una build instalada, la ruta se resuelve desde el entorno de ejecucion de la app.</li>
+        </ul>
+
+        <div class="path-box">
+            <strong>Ruta actual</strong>
+            <code>@Environment.PersistenceFilePath</code>
+        </div>
+    </section>
+
+    <section class="editor-card">
+        <div class="editor-toolbar">
+            <span class="editor-status @(IsDirty ? "editor-status-warning" : "editor-status-ok")">
+                @(IsDirty ? "Cambios pendientes" : "Sin cambios pendientes")
+            </span>
+
+            <button class="btn btn-primary"
+                    @onclick="SaveAsync"
+                    disabled="@(!IsDirty || _isSaving)">
+                @(_isSaving ? "Guardando..." : "Guardar JSON")
+            </button>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(_feedbackMessage))
+        {
+            <p class="editor-feedback">@_feedbackMessage</p>
+        }
+
+        @if (_lastSavedAtUtc is not null)
+        {
+            <p class="text-body-secondary">
+                Ultimo guardado UTC: @_lastSavedAtUtc.Value.ToString("yyyy-MM-dd HH:mm:ss")
+            </p>
+        }
+
+        <textarea class="editor-input"
+                  value="@_currentText"
+                  @oninput="OnInputChanged"
+                  placeholder="Escribe aqui el contenido que quieres persistir localmente."></textarea>
+    </section>
+</div>
+
+@code {
+    private string _currentText = string.Empty;
+    private string _savedText = string.Empty;
+    private string? _feedbackMessage;
+    private DateTimeOffset? _lastSavedAtUtc;
+    private bool _isSaving;
+
+    private bool IsDirty => !string.Equals(_currentText, _savedText, StringComparison.Ordinal);
+
+    protected override async Task OnInitializedAsync()
+    {
+        var document = await PersistenceStore.LoadAsync();
+        _currentText = document.Text;
+        _savedText = document.Text;
+        _lastSavedAtUtc = document.LastSavedAtUtc;
+    }
+
+    private void OnInputChanged(ChangeEventArgs args)
+    {
+        _currentText = args.Value?.ToString() ?? string.Empty;
+        _feedbackMessage = null;
+    }
+
+    private async Task SaveAsync()
+    {
+        if (!IsDirty)
+        {
+            return;
+        }
+
+        _isSaving = true;
+        _feedbackMessage = null;
+
+        try
+        {
+            var savedAtUtc = DateTimeOffset.UtcNow;
+            await PersistenceStore.SaveAsync(new PersistenceDocument
+            {
+                Text = _currentText,
+                LastSavedAtUtc = savedAtUtc
+            });
+
+            _savedText = _currentText;
+            _lastSavedAtUtc = savedAtUtc;
+            _feedbackMessage = "Cambios guardados en el JSON local.";
+        }
+        finally
+        {
+            _isSaving = false;
+        }
+    }
+}

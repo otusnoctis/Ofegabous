@@ -1,0 +1,16 @@
+<Project>
+  <PropertyGroup>
+    <TemplateAppDisplayName>Ofegabous Template</TemplateAppDisplayName>
+    <TemplateAppDescription>Plantilla Windows para utilidades locales con .NET MAUI Blazor Hybrid, persistencia JSON y actualizaciones Velopack.</TemplateAppDescription>
+    <TemplateAppId>com.companyname.ofegabous.template</TemplateAppId>
+    <TemplateAppDisplayVersion>1.0.0</TemplateAppDisplayVersion>
+    <TemplateAppVersion>1</TemplateAppVersion>
+    <TemplateRepositoryUrl>https://github.com/your-org/ofegabous</TemplateRepositoryUrl>
+    <TemplateAuthors>Your Team</TemplateAuthors>
+    <TemplatePackageId>OfegabousTemplate</TemplatePackageId>
+    <TemplateDataDirectoryName>data</TemplateDataDirectoryName>
+    <TemplatePersistenceFileName>persistence.json</TemplatePersistenceFileName>
+    <TemplateBrandColor>#1f6fe5</TemplateBrandColor>
+    <VelopackVersion>0.0.1298</VelopackVersion>
+  </PropertyGroup>
+</Project>

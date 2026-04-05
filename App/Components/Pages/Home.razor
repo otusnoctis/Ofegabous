@@ -1,5 +1,68 @@
-﻿@page "/"
+@page "/"
+@inject TemplateMetadata Metadata
+@inject TemplateEnvironment Environment
+@inject AppUpdateService UpdateService
 
-<h1>Hello, world!</h1>
+<PageTitle>Home</PageTitle>
 
-Welcome to your new app.
+<section class="hero-panel">
+    <p class="eyebrow">Template overview</p>
+    <h1>@Metadata.DisplayName</h1>
+    <p class="hero-copy">
+        Esta aplicacion es la base de una plantilla Windows para herramientas locales.
+        El objetivo es reutilizar shell, persistencia y actualizaciones sin mezclar todavia logica de negocio especifica.
+    </p>
+</section>
+
+<section class="home-grid">
+    <div class="content-card">
+        <h2>Caracteristicas clave</h2>
+        <ul>
+            <li>Windows-only con `.NET MAUI` + `BlazorWebView`.</li>
+            <li>Persistencia local JSON simple y sustituible.</li>
+            <li>Actualizaciones con `Velopack` sobre `GitHub Releases`.</li>
+            <li>Configuracion compartida centralizada en `Directory.Build.props`.</li>
+        </ul>
+    </div>
+
+    <div class="content-card">
+        <h2>Arquitectura</h2>
+        <ul>
+            <li>`Layout`: shell principal y navegacion lateral.</li>
+            <li>`Pages`: `Home`, `Persistence` y `Settings` como base funcional.</li>
+            <li>`Services`: metadata, entorno, persistencia y updates.</li>
+            <li>`scripts` + `.github`: packaging y releases por tags.</li>
+        </ul>
+    </div>
+
+    <div class="content-card">
+        <h2>Modelo de runtime</h2>
+        <ul>
+            <li>En desarrollo usa la raiz del repo como directorio base.</li>
+            <li>Los datos locales viven en `@Environment.DataDirectory`.</li>
+            <li>La comprobacion de updates se activa solo en instalaciones Velopack validas.</li>
+            <li>`Settings` concentra versionado, estado y acciones de actualizacion.</li>
+        </ul>
+    </div>
+
+    <div class="content-card">
+        <h2>Estado actual</h2>
+        <dl class="detail-list">
+            <dt>Modo</dt>
+            <dd>@(Environment.IsDevelopmentMode ? "Development" : "Installed runtime")</dd>
+            <dt>Repositorio de updates</dt>
+            <dd>@_snapshot.RepositoryUrl</dd>
+            <dt>Archivo de persistencia</dt>
+            <dd>@Environment.PersistenceFilePath</dd>
+        </dl>
+    </div>
+</section>
+
+@code {
+    private AppUpdateSnapshot _snapshot = default!;
+
+    protected override void OnInitialized()
+    {
+        _snapshot = UpdateService.GetSnapshot();
+    }
+}
