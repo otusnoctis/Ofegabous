@@ -17,16 +17,22 @@
 }
 else
 {
-    <div class="settings-grid">
+    <div class="settings-stack">
         <section class="settings-card">
             <h2>Versions</h2>
             <dl class="settings-details">
-                <dt>App</dt>
-                <dd>@_snapshot.AppVersion</dd>
-                <dt>Velopack</dt>
-                <dd>@_snapshot.VelopackVersion</dd>
-                <dt>Update repository</dt>
-                <dd>@_snapshot.RepositoryUrl</dd>
+                <div class="settings-detail-item">
+                    <dt>App</dt>
+                    <dd>@_snapshot.AppVersion</dd>
+                </div>
+                <div class="settings-detail-item">
+                    <dt>Velopack</dt>
+                    <dd>@_snapshot.VelopackVersion</dd>
+                </div>
+                <div class="settings-detail-item settings-detail-item-wide">
+                    <dt>Update repository</dt>
+                    <dd>@_snapshot.RepositoryUrl</dd>
+                </div>
             </dl>
         </section>
 
@@ -79,7 +85,7 @@ else
             }
         </section>
 
-        <section class="settings-card settings-card-wide">
+        <section class="settings-card">
             <h2>Session</h2>
             <p class="mb-0">@_snapshot.StartupMessage</p>
             @if (!string.IsNullOrWhiteSpace(_progressMessage))
