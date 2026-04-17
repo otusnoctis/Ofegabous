@@ -16,6 +16,8 @@ The app takes the repository URL from assembly metadata, which in turn is fed fr
 
 - `TemplateRepositoryUrl`
 
+The Velopack dependency version is also intentionally centralized in `Directory.Build.props` through `VelopackVersion`. The project file contains a build guard so Velopack is not updated ad hoc in the `.csproj`.
+
 ## Update flow
 
 1. The app starts.

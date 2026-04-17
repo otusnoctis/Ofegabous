@@ -2,6 +2,7 @@
 @implements IDisposable
 @inject AppUpdateService UpdateService
 @inject UpdateLogStore UpdateLogStore
+@inject SystemShellService SystemShellService
 
 <PageTitle>Settings</PageTitle>
 
@@ -98,7 +99,16 @@ else
                             <h3>Update log</h3>
                             <p class="text-body-secondary mb-0">Latest events stored in `logs/update-log.json`.</p>
                         </div>
+                        <button class="btn btn-outline-primary btn-sm"
+                                @onclick="OpenRawLogFile">
+                            Open raw file
+                        </button>
                     </div>
+
+                    @if (!string.IsNullOrWhiteSpace(_logActionMessage))
+                    {
+                        <p class="settings-log-action-message">@_logActionMessage</p>
+                    }
 
                     @if (!string.IsNullOrWhiteSpace(_progressMessage))
                     {
@@ -135,6 +145,7 @@ else
     private IReadOnlyList<UpdateLogEntry> _updateLogEntries = [];
     private bool _isBusy;
     private bool _showUpdateLog;
+    private string? _logActionMessage;
     private string _progressMessage = string.Empty;
 
     protected override async Task OnInitializedAsync()
@@ -204,10 +215,18 @@ else
     private async Task ToggleLogAsync()
     {
         _showUpdateLog = !_showUpdateLog;
+        _logActionMessage = null;
         if (_showUpdateLog)
         {
             await RefreshUpdateLogAsync();
         }
+    }
+
+    private void OpenRawLogFile()
+    {
+        _logActionMessage = SystemShellService.TryOpenFile(UpdateLogStore.LogFilePath)
+            ? null
+            : "The raw update log file could not be opened.";
     }
 
     private async Task RefreshUpdateLogAsync()

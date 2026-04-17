@@ -46,12 +46,27 @@
     <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+    <!-- Keep Velopack versions centralized in Directory.Build.props via $(VelopackVersion). -->
     <PackageReference Include="Velopack" Version="$(VelopackVersion)" />
     <PackageReference Include="Velopack.Build" Version="$(VelopackVersion)">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
   </ItemGroup>
+
+  <Target Name="ValidateCentralizedVelopackVersion" BeforeTargets="Restore">
+    <ItemGroup>
+      <_VelopackPackageReference Include="@(PackageReference)"
+                                 Condition="'%(PackageReference.Identity)' == 'Velopack' or '%(PackageReference.Identity)' == 'Velopack.Build'" />
+    </ItemGroup>
+
+    <Error Condition="'@(_VelopackPackageReference)' == ''"
+           Text="Expected Velopack and Velopack.Build package references were not found." />
+    <Error Condition="'@(_VelopackPackageReference->WithMetadataValue('Identity', 'Velopack')->'%(Version)')' != '$(VelopackVersion)'"
+           Text="Velopack package version must stay centralized in Directory.Build.props via $(VelopackVersion)." />
+    <Error Condition="'@(_VelopackPackageReference->WithMetadataValue('Identity', 'Velopack.Build')->'%(Version)')' != '$(VelopackVersion)'"
+           Text="Velopack.Build package version must stay centralized in Directory.Build.props via $(VelopackVersion)." />
+  </Target>
 
   <ItemGroup>
     <AssemblyMetadata Include="TemplateAppDisplayName" Value="$(TemplateAppDisplayName)" />

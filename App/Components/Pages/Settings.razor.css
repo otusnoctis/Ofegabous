@@ -54,9 +54,23 @@
     border-top: 1px solid rgba(31, 111, 229, 0.12);
 }
 
+.settings-log-header {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
 .settings-log-header h3 {
     margin-bottom: 0.25rem;
     font-size: 1rem;
+}
+
+.settings-log-action-message {
+    margin-top: 0.85rem;
+    margin-bottom: 0;
+    font-size: 0.88rem;
+    color: #8a3b2d;
 }
 
 .settings-log-list {
