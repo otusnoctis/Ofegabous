@@ -4,24 +4,25 @@
 
 <PageTitle>Persistence</PageTitle>
 
-<h1>Persistence example</h1>
-
-<p class="page-intro">
-    Esta pagina demuestra la persistencia local de la plantilla. El contenido del editor se guarda en un fichero JSON
-    dentro del directorio `data`, sin backend y sin base de datos.
-</p>
+<header class="page-header">
+    <h1 class="page-title">Persistence</h1>
+    <p class="page-summary">
+        Persistence example. This screen demonstrates the template's local JSON-based persistence,
+        with no backend and no database.
+    </p>
+</header>
 
 <div class="persistence-grid">
     <section class="info-card">
-        <h2>Como funciona</h2>
+        <h2>How it works</h2>
         <ul>
-            <li>El servicio `PersistenceStore` lee y escribe un documento JSON.</li>
-            <li>En desarrollo, el fichero vive en la raiz del repo para facilitar inspeccion y versionado del ejemplo.</li>
-            <li>En una build instalada, la ruta se resuelve desde el entorno de ejecucion de la app.</li>
+            <li>The `PersistenceStore` service reads and writes a JSON document.</li>
+            <li>In development, the file lives in the repo root so the example is easy to inspect and version.</li>
+            <li>In an installed build, the path is resolved from the application's runtime environment.</li>
         </ul>
 
         <div class="path-box">
-            <strong>Ruta actual</strong>
+            <strong>Current path</strong>
             <code>@Environment.PersistenceFilePath</code>
         </div>
     </section>
@@ -29,13 +30,13 @@
     <section class="editor-card">
         <div class="editor-toolbar">
             <span class="editor-status @(IsDirty ? "editor-status-warning" : "editor-status-ok")">
-                @(IsDirty ? "Cambios pendientes" : "Sin cambios pendientes")
+                @(IsDirty ? "Pending changes" : "No pending changes")
             </span>
 
             <button class="btn btn-primary"
                     @onclick="SaveAsync"
                     disabled="@(!IsDirty || _isSaving)">
-                @(_isSaving ? "Guardando..." : "Guardar JSON")
+                @(_isSaving ? "Saving..." : "Save JSON")
             </button>
         </div>
 
@@ -47,14 +48,14 @@
         @if (_lastSavedAtUtc is not null)
         {
             <p class="text-body-secondary">
-                Ultimo guardado UTC: @_lastSavedAtUtc.Value.ToString("yyyy-MM-dd HH:mm:ss")
+                Last saved UTC: @_lastSavedAtUtc.Value.ToString("yyyy-MM-dd HH:mm:ss")
             </p>
         }
 
         <textarea class="editor-input"
                   value="@_currentText"
                   @oninput="OnInputChanged"
-                  placeholder="Escribe aqui el contenido que quieres persistir localmente."></textarea>
+                  placeholder="Write the content you want to persist locally here."></textarea>
     </section>
 </div>
 
@@ -102,7 +103,7 @@
 
             _savedText = _currentText;
             _lastSavedAtUtc = savedAtUtc;
-            _feedbackMessage = "Cambios guardados en el JSON local.";
+            _feedbackMessage = "Changes saved to the local JSON file.";
         }
         finally
         {

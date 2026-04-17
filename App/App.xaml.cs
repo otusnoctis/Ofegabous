@@ -21,6 +21,10 @@ public partial class App : Application
 
     protected override Window CreateWindow(IActivationState? activationState)
     {
-        return new Window(new MainPage()) { Title = _metadata.DisplayName };
+        return new Window(new MainPage())
+        {
+            Title = _metadata.DisplayName,
+            Width = 1280
+        };
     }
 }

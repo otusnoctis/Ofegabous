@@ -34,6 +34,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="..\data\**\*">
+      <Link>data\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\documentation\**\*.md">
+      <Link>documentation\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
@@ -46,10 +57,12 @@
 
   <ItemGroup>
     <AssemblyMetadata Include="TemplateAppDisplayName" Value="$(TemplateAppDisplayName)" />
+    <AssemblyMetadata Include="TemplateAppShortName" Value="$(TemplateAppShortName)" />
     <AssemblyMetadata Include="TemplateAppDescription" Value="$(TemplateAppDescription)" />
     <AssemblyMetadata Include="TemplateRepositoryUrl" Value="$(TemplateRepositoryUrl)" />
     <AssemblyMetadata Include="TemplateDataDirectoryName" Value="$(TemplateDataDirectoryName)" />
     <AssemblyMetadata Include="TemplatePersistenceFileName" Value="$(TemplatePersistenceFileName)" />
+    <AssemblyMetadata Include="TemplateDocumentationDirectoryName" Value="$(TemplateDocumentationDirectoryName)" />
   </ItemGroup>
 
 </Project>

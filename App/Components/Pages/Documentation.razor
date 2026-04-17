@@ -1,0 +1,122 @@
+@page "/documentation"
+@inject DocumentationService DocumentationService
+@inject TemplateEnvironment Environment
+@inject SystemShellService SystemShellService
+
+<PageTitle>Documentation</PageTitle>
+
+<header class="page-header">
+    <h1 class="page-title">Documentation</h1>
+    <p class="page-summary">
+        Browse and read the markdown documentation bundled with the template. Documents are served from the
+        repo `documentation` folder or from the published app.
+    </p>
+</header>
+
+<div class="documentation-page">
+    <section class="documentation-content-panel">
+        @if (!string.IsNullOrWhiteSpace(_statusMessage))
+        {
+            <div class="alert alert-secondary mb-0" role="status">@_statusMessage</div>
+        }
+        else if (_activePage is not null)
+        {
+            <article class="documentation-content">
+                @((MarkupString)_activePage.Html)
+            </article>
+        }
+    </section>
+
+    <aside class="documentation-nav-panel">
+        <div class="documentation-nav-card">
+            <h2>Pages</h2>
+            <p class="text-body-secondary">
+                Document navigation and quick access to the folder on disk.
+            </p>
+            <div class="documentation-folder-actions">
+                <button type="button" class="btn btn-outline-primary btn-sm" @onclick="OpenDocumentationFolder">
+                    <i class="bi bi-folder2-open" aria-hidden="true"></i>
+                    <span>Open folder</span>
+                </button>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(_folderActionMessage))
+            {
+                <p class="documentation-folder-message">@_folderActionMessage</p>
+            }
+            @if (_activePage is not null)
+            {
+                <p class="documentation-active-path">
+                    <span>Active file</span>
+                    <strong>@_activePage.Navigation.RelativePath</strong>
+                </p>
+            }
+
+            @if (_navigationItems.Count == 0)
+            {
+                <p class="mb-0">No documents are available.</p>
+            }
+            else
+            {
+                <nav class="documentation-nav-list" aria-label="Documentation pages">
+                    @foreach (var item in _navigationItems)
+                    {
+                        <a class="documentation-nav-link @(IsActive(item) ? "documentation-nav-link-active" : string.Empty)"
+                           href="@GetDocumentUrl(item.Slug)">
+                            <span class="documentation-nav-title">@item.Title</span>
+                        </a>
+                    }
+                </nav>
+            }
+        </div>
+    </aside>
+</div>
+
+@code {
+    [SupplyParameterFromQuery(Name = "doc")]
+    public string? DocumentSlug { get; set; }
+
+    private IReadOnlyList<DocumentationNavItem> _navigationItems = [];
+    private DocumentationPage? _activePage;
+    private string _statusMessage = string.Empty;
+    private string? _folderActionMessage;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _navigationItems = DocumentationService.GetNavigation();
+        _statusMessage = string.Empty;
+        _activePage = null;
+
+        if (_navigationItems.Count == 0)
+        {
+            _statusMessage = "The documentation folder does not contain any markdown documents.";
+            return;
+        }
+
+        var effectiveSlug = string.IsNullOrWhiteSpace(DocumentSlug)
+            ? _navigationItems[0].Slug
+            : DocumentSlug;
+
+        _activePage = await DocumentationService.LoadPageAsync(effectiveSlug);
+        if (_activePage is null)
+        {
+            _statusMessage = "The requested document could not be loaded.";
+        }
+    }
+
+    private bool IsActive(DocumentationNavItem item)
+    {
+        return string.Equals(_activePage?.Navigation.Slug, item.Slug, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private string GetDocumentUrl(string slug)
+    {
+        return $"/documentation?doc={Uri.EscapeDataString(slug)}";
+    }
+
+    private void OpenDocumentationFolder()
+    {
+        _folderActionMessage = SystemShellService.TryOpenDirectory(Environment.DocumentationDirectory)
+            ? null
+            : "The documentation folder could not be opened.";
+    }
+}

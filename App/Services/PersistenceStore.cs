@@ -20,7 +20,7 @@ public sealed class PersistenceStore
     {
         if (!File.Exists(_environment.PersistenceFilePath))
         {
-            return new PersistenceDocument();
+            return await LoadBundledDocumentAsync(cancellationToken);
         }
 
         try
@@ -31,7 +31,7 @@ public sealed class PersistenceStore
         }
         catch (JsonException)
         {
-            return new PersistenceDocument();
+            return await LoadBundledDocumentAsync(cancellationToken);
         }
     }
 
@@ -41,5 +41,24 @@ public sealed class PersistenceStore
 
         await using var stream = File.Create(_environment.PersistenceFilePath);
         await JsonSerializer.SerializeAsync(stream, document, JsonOptions, cancellationToken);
+    }
+
+    private async Task<PersistenceDocument> LoadBundledDocumentAsync(CancellationToken cancellationToken)
+    {
+        if (!File.Exists(_environment.BundledPersistenceFilePath))
+        {
+            return new PersistenceDocument();
+        }
+
+        try
+        {
+            await using var stream = File.OpenRead(_environment.BundledPersistenceFilePath);
+            var document = await JsonSerializer.DeserializeAsync<PersistenceDocument>(stream, cancellationToken: cancellationToken);
+            return document ?? new PersistenceDocument();
+        }
+        catch (JsonException)
+        {
+            return new PersistenceDocument();
+        }
     }
 }

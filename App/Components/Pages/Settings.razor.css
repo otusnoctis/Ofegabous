@@ -7,7 +7,7 @@
 .settings-card {
     padding: 1.2rem;
     border: 1px solid rgba(31, 111, 229, 0.14);
-    border-radius: 22px;
+    border-radius: 14px;
     background: rgba(255, 255, 255, 0.92);
     box-shadow: 0 14px 30px rgba(32, 48, 39, 0.08);
 }

@@ -4,23 +4,28 @@
 
 <PageTitle>Settings</PageTitle>
 
-<h1>Settings</h1>
+<header class="page-header">
+    <h1 class="page-title">Settings</h1>
+    <p class="page-summary">
+        Versioning state, update runtime status, and the current application session.
+    </p>
+</header>
 
 @if (_snapshot is null)
 {
-    <p>Cargando...</p>
+    <p>Loading...</p>
 }
 else
 {
     <div class="settings-grid">
         <section class="settings-card">
-            <h2>Versiones</h2>
+            <h2>Versions</h2>
             <dl class="settings-details">
                 <dt>App</dt>
                 <dd>@_snapshot.AppVersion</dd>
                 <dt>Velopack</dt>
                 <dd>@_snapshot.VelopackVersion</dd>
-                <dt>Repositorio de updates</dt>
+                <dt>Update repository</dt>
                 <dd>@_snapshot.RepositoryUrl</dd>
             </dl>
         </section>
@@ -28,16 +33,16 @@ else
         <section class="settings-card">
             <div class="settings-header">
                 <div>
-                    <h2>Actualizaciones</h2>
+                    <h2>Updates</h2>
                     <p class="text-body-secondary mb-0">@GetStatusSummary()</p>
                 </div>
                 @if (_snapshot.IsUpdateAvailable)
                 {
-                    <span class="badge text-bg-warning">Pendiente</span>
+                    <span class="badge text-bg-warning">Pending</span>
                 }
                 else if (!_snapshot.IsDevMode)
                 {
-                    <span class="badge text-bg-success">Al dia</span>
+                    <span class="badge text-bg-success">Up to date</span>
                 }
             </div>
 
@@ -49,7 +54,7 @@ else
             @if (_snapshot.LastCheckedAt is not null)
             {
                 <p class="text-body-secondary mt-3 mb-0">
-                    Ultima comprobacion: @_snapshot.LastCheckedAt.Value.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")
+                    Last check: @_snapshot.LastCheckedAt.Value.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")
                 </p>
             }
 
@@ -61,21 +66,21 @@ else
                         <button class="btn btn-primary"
                                 disabled="@(_isBusy || !_snapshot.CanCheckUpdates)"
                                 @onclick="UpdateNowAsync">
-                            @(_isBusy ? "Procesando..." : "Actualizar ahora")
+                            @(_isBusy ? "Processing..." : "Update now")
                         </button>
                     }
 
                     <button class="btn btn-outline-primary"
                             disabled="@(_isBusy || !_snapshot.CanCheckUpdates)"
                             @onclick="CheckForUpdatesAsync">
-                        @(_isBusy ? "Comprobando..." : "Buscar de nuevo")
+                        @(_isBusy ? "Checking..." : "Check again")
                     </button>
                 </div>
             }
         </section>
 
         <section class="settings-card settings-card-wide">
-            <h2>Sesion</h2>
+            <h2>Session</h2>
             <p class="mb-0">@_snapshot.StartupMessage</p>
             @if (!string.IsNullOrWhiteSpace(_progressMessage))
             {
@@ -151,45 +156,45 @@ else
     {
         if (_snapshot is null)
         {
-            return "Cargando estado de actualizacion.";
+            return "Loading update status.";
         }
 
         if (_snapshot.IsDevMode)
         {
-            return "Las actualizaciones no se ejecutan en development mode.";
+            return "Updates do not run in development mode.";
         }
 
         if (!_snapshot.IsInstalled)
         {
-            return "La app no esta instalada mediante Velopack, asi que el update runtime esta deshabilitado.";
+            return "The app is not installed through Velopack, so the update runtime is disabled.";
         }
 
         if (_snapshot.IsUpdateAvailable)
         {
-            return $"Hay una nueva version disponible: {_snapshot.AvailableVersion}.";
+            return $"A new version is available: {_snapshot.AvailableVersion}.";
         }
 
-        return "No hay actualizaciones pendientes.";
+        return "There are no pending updates.";
     }
 
     private string GetUpdateHeadline()
     {
         if (_snapshot is null)
         {
-            return "Cargando";
+            return "Loading";
         }
 
         if (_snapshot.IsDevMode)
         {
-            return "Actualizaciones deshabilitadas";
+            return "Updates disabled";
         }
 
         if (_snapshot.IsUpdateAvailable)
         {
-            return $"Actualizacion disponible: {_snapshot.AvailableVersion}";
+            return $"Update available: {_snapshot.AvailableVersion}";
         }
 
-        return "Aplicacion al dia";
+        return "Application up to date";
     }
 
     private string GetUpdateAlertClass()

@@ -1,6 +1,6 @@
 .hero-panel {
     padding: 1.5rem 1.6rem;
-    border-radius: 28px;
+    border-radius: 18px;
     color: #f7fbf8;
     background: #1f6fe5;
     box-shadow: 0 24px 60px rgba(17, 55, 111, 0.22);
@@ -15,7 +15,7 @@
     color: rgba(240, 248, 243, 0.8);
 }
 
-.hero-panel h1 {
+.hero-panel h2 {
     margin-bottom: 0.75rem;
     font-size: clamp(2rem, 4vw, 3rem);
 }
@@ -37,7 +37,7 @@
 .content-card {
     padding: 1.25rem;
     border: 1px solid rgba(31, 111, 229, 0.14);
-    border-radius: 22px;
+    border-radius: 14px;
     background: rgba(255, 255, 255, 0.9);
     box-shadow: 0 14px 30px rgba(32, 48, 39, 0.08);
 }

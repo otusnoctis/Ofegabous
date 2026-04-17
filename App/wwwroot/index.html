@@ -24,6 +24,29 @@
         <span class="dismiss">🗙</span>
     </div>
 
+    <script>
+        (function () {
+            function measureScrollbarWidth() {
+                const probe = document.createElement('div');
+                probe.style.position = 'absolute';
+                probe.style.top = '-9999px';
+                probe.style.width = '100px';
+                probe.style.height = '100px';
+                probe.style.overflow = 'scroll';
+                document.body.appendChild(probe);
+
+                const width = probe.offsetWidth - probe.clientWidth;
+                probe.remove();
+
+                document.documentElement.style.setProperty('--app-scrollbar-width', width + 'px');
+            }
+
+            window.addEventListener('resize', measureScrollbarWidth);
+            window.addEventListener('load', measureScrollbarWidth);
+            measureScrollbarWidth();
+        })();
+    </script>
+
     <script src="_framework/blazor.webview.js" autostart="false"></script>
 
 </body>

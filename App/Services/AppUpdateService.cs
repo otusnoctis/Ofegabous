@@ -12,7 +12,7 @@ public sealed class AppUpdateService
     private Task? _startupCheckTask;
     private UpdateInfo? _availableUpdate;
     private DateTimeOffset? _lastCheckedAt;
-    private string _lastUpdateMessage = "Aun no se han consultado actualizaciones.";
+    private string _lastUpdateMessage = "Updates have not been checked yet.";
 
     public AppUpdateService(UpdateStartupState startupState, TemplateMetadata metadata, TemplateEnvironment environment)
     {
@@ -66,7 +66,7 @@ public sealed class AppUpdateService
         {
             _availableUpdate = null;
             _lastCheckedAt = null;
-            _lastUpdateMessage = "Development mode o instalacion no valida: actualizaciones deshabilitadas.";
+            _lastUpdateMessage = "Development mode or invalid installation: updates are disabled.";
             var disabledSnapshot = GetSnapshot();
             SnapshotChanged?.Invoke();
             return disabledSnapshot;
@@ -74,21 +74,21 @@ public sealed class AppUpdateService
 
         try
         {
-            reportProgress?.Invoke("Comprobando actualizaciones...");
+            reportProgress?.Invoke("Checking for updates...");
             var updates = await _updateManager.CheckForUpdatesAsync();
             _lastCheckedAt = DateTimeOffset.Now;
 
             if (updates is null)
             {
                 _availableUpdate = null;
-                _lastUpdateMessage = "La aplicacion esta al dia.";
+                _lastUpdateMessage = "The application is up to date.";
                 var upToDateSnapshot = GetSnapshot();
                 SnapshotChanged?.Invoke();
                 return upToDateSnapshot;
             }
 
             _availableUpdate = updates;
-            _lastUpdateMessage = $"Hay una actualizacion disponible a {_availableUpdate.TargetFullRelease.Version}.";
+            _lastUpdateMessage = $"An update is available: {_availableUpdate.TargetFullRelease.Version}.";
             var availableSnapshot = GetSnapshot();
             SnapshotChanged?.Invoke();
             return availableSnapshot;
@@ -97,7 +97,7 @@ public sealed class AppUpdateService
         {
             _availableUpdate = null;
             _lastCheckedAt = DateTimeOffset.Now;
-            _lastUpdateMessage = $"No se pudieron comprobar las actualizaciones: {exception.Message}";
+            _lastUpdateMessage = $"Could not check for updates: {exception.Message}";
             var failedSnapshot = GetSnapshot();
             SnapshotChanged?.Invoke();
             return failedSnapshot;
@@ -109,7 +109,7 @@ public sealed class AppUpdateService
         if (IsDevMode || _updateManager is null || !_updateManager.IsInstalled)
         {
             _availableUpdate = null;
-            _lastUpdateMessage = "Development mode o instalacion no valida: actualizaciones deshabilitadas.";
+            _lastUpdateMessage = "Development mode or invalid installation: updates are disabled.";
             var disabledSnapshot = GetSnapshot();
             SnapshotChanged?.Invoke();
             return new AppUpdateResult(disabledSnapshot, string.Empty);
@@ -131,10 +131,10 @@ public sealed class AppUpdateService
 
             await _updateManager.DownloadUpdatesAsync(_availableUpdate, progress =>
             {
-                reportProgress($"Descargando {targetVersion}... {progress}%");
+                reportProgress($"Downloading {targetVersion}... {progress}%");
             });
 
-            reportProgress($"Actualizacion descargada. Reiniciando hacia {targetVersion}...");
+            reportProgress($"Update downloaded. Restarting into {targetVersion}...");
 
             _updateManager.ApplyUpdatesAndRestart(
                 _availableUpdate.TargetFullRelease,
@@ -144,14 +144,14 @@ public sealed class AppUpdateService
                     "--updated-package", _availableUpdate.TargetFullRelease.FileName
                 ]);
 
-            _lastUpdateMessage = $"La actualizacion a {targetVersion} se ha preparado para reinicio.";
+            _lastUpdateMessage = $"The {targetVersion} update is ready to restart.";
             var preparedSnapshot = GetSnapshot();
             SnapshotChanged?.Invoke();
             return new AppUpdateResult(preparedSnapshot, string.Empty);
         }
         catch (Exception exception)
         {
-            _lastUpdateMessage = $"No se pudo preparar la actualizacion: {exception.Message}";
+            _lastUpdateMessage = $"Could not prepare the update: {exception.Message}";
             var failedSnapshot = GetSnapshot();
             SnapshotChanged?.Invoke();
             return new AppUpdateResult(failedSnapshot, exception.Message);
@@ -167,7 +167,7 @@ public sealed class AppUpdateService
     {
         if (IsDevMode)
         {
-            return "Development mode: esta build local no comprobara actualizaciones reales.";
+            return "Development mode: this local build will not check for real updates.";
         }
 
         if (!string.IsNullOrWhiteSpace(_startupState.UpdatedFromVersion) &&
@@ -175,20 +175,20 @@ public sealed class AppUpdateService
         {
             var packageText = string.IsNullOrWhiteSpace(_startupState.UpdatedPackage)
                 ? string.Empty
-                : $" Paquete aplicado: {_startupState.UpdatedPackage}.";
-            return $"Actualizada correctamente desde {_startupState.UpdatedFromVersion} hasta {_startupState.UpdatedToVersion}.{packageText}";
+                : $" Applied package: {_startupState.UpdatedPackage}.";
+            return $"Updated successfully from {_startupState.UpdatedFromVersion} to {_startupState.UpdatedToVersion}.{packageText}";
         }
 
         if (!string.IsNullOrWhiteSpace(_startupState.FirstRunVersion))
         {
-            return $"Primer arranque tras instalacion. Version instalada: {_startupState.FirstRunVersion}.";
+            return $"First launch after installation. Installed version: {_startupState.FirstRunVersion}.";
         }
 
         if (!string.IsNullOrWhiteSpace(_startupState.RestartedVersion))
         {
-            return $"La aplicacion se ha reiniciado tras una actualizacion. Version actual: {_startupState.RestartedVersion}.";
+            return $"The application restarted after an update. Current version: {_startupState.RestartedVersion}.";
         }
 
-        return $"Instalacion activa. Version actual: {appVersion}.";
+        return $"Active installation. Current version: {appVersion}.";
     }
 }

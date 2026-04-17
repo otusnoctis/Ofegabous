@@ -15,6 +15,8 @@ public static class MauiProgram
         builder.Services.AddMauiBlazorWebView();
         builder.Services.AddSingleton<TemplateMetadata>();
         builder.Services.AddSingleton<TemplateEnvironment>();
+        builder.Services.AddSingleton<SystemShellService>();
+        builder.Services.AddSingleton<DocumentationService>();
         builder.Services.AddSingleton<PersistenceStore>();
         builder.Services.AddSingleton<UpdateStartupState>();
         builder.Services.AddSingleton<AppUpdateService>();

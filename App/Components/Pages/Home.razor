@@ -5,54 +5,62 @@
 
 <PageTitle>Home</PageTitle>
 
+<header class="page-header">
+    <h1 class="page-title">Home</h1>
+    <p class="page-summary">
+        Overview of the template, its base architecture, and the current runtime state.
+    </p>
+</header>
+
 <section class="hero-panel">
-    <p class="eyebrow">Template overview</p>
-    <h1>@Metadata.DisplayName</h1>
+    <p class="eyebrow">Template app</p>
+    <h2>@Metadata.DisplayName</h2>
     <p class="hero-copy">
-        Esta aplicacion es la base de una plantilla Windows para herramientas locales.
-        El objetivo es reutilizar shell, persistencia y actualizaciones sin mezclar todavia logica de negocio especifica.
+        This application is the base of a Windows template for local tools.
+        The goal is to reuse the shell, persistence, and update flow without mixing in product-specific business logic yet.
     </p>
 </section>
 
 <section class="home-grid">
     <div class="content-card">
-        <h2>Caracteristicas clave</h2>
+        <h2>Key features</h2>
         <ul>
-            <li>Windows-only con `.NET MAUI` + `BlazorWebView`.</li>
-            <li>Persistencia local JSON simple y sustituible.</li>
-            <li>Actualizaciones con `Velopack` sobre `GitHub Releases`.</li>
-            <li>Configuracion compartida centralizada en `Directory.Build.props`.</li>
+            <li>Windows-only with `.NET MAUI` + `BlazorWebView`.</li>
+            <li>Simple JSON local persistence that can be replaced later.</li>
+            <li>Markdown documentation served from the repo filesystem or the published app.</li>
+            <li>`Velopack` updates delivered through `GitHub Releases`.</li>
+            <li>Shared configuration centralized in `Directory.Build.props`.</li>
         </ul>
     </div>
 
     <div class="content-card">
-        <h2>Arquitectura</h2>
+        <h2>Architecture</h2>
         <ul>
-            <li>`Layout`: shell principal y navegacion lateral.</li>
-            <li>`Pages`: `Home`, `Persistence` y `Settings` como base funcional.</li>
-            <li>`Services`: metadata, entorno, persistencia y updates.</li>
-            <li>`scripts` + `.github`: packaging y releases por tags.</li>
+            <li>`Layout`: the main shell and side navigation.</li>
+            <li>`Pages`: `Home`, `Persistence`, `Documentation`, and `Settings` as the functional baseline.</li>
+            <li>`Services`: metadata, environment, persistence, documentation, and update services.</li>
+            <li>`scripts` + `.github`: packaging and tag-driven releases.</li>
         </ul>
     </div>
 
     <div class="content-card">
-        <h2>Modelo de runtime</h2>
+        <h2>Runtime model</h2>
         <ul>
-            <li>En desarrollo usa la raiz del repo como directorio base.</li>
-            <li>Los datos locales viven en `@Environment.DataDirectory`.</li>
-            <li>La comprobacion de updates se activa solo en instalaciones Velopack validas.</li>
-            <li>`Settings` concentra versionado, estado y acciones de actualizacion.</li>
+            <li>In development it uses the repo root as the base directory.</li>
+            <li>Local data lives in `@Environment.DataDirectory`.</li>
+            <li>Update checks run only for valid Velopack installations.</li>
+            <li>`Settings` concentrates versioning, update state, and actions.</li>
         </ul>
     </div>
 
     <div class="content-card">
-        <h2>Estado actual</h2>
+        <h2>Current state</h2>
         <dl class="detail-list">
-            <dt>Modo</dt>
+            <dt>Mode</dt>
             <dd>@(Environment.IsDevelopmentMode ? "Development" : "Installed runtime")</dd>
-            <dt>Repositorio de updates</dt>
+            <dt>Update repository</dt>
             <dd>@_snapshot.RepositoryUrl</dd>
-            <dt>Archivo de persistencia</dt>
+            <dt>Persistence file</dt>
             <dd>@Environment.PersistenceFilePath</dd>
         </dl>
     </div>

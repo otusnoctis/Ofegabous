@@ -4,9 +4,13 @@ public sealed class TemplateEnvironment
 {
     public string ExecutableDirectory { get; }
     public string? SolutionRoot { get; }
-    public string RootDirectory { get; }
+    public string ContentRootDirectory { get; }
+    public string StorageRootDirectory { get; }
     public string DataDirectory { get; }
+    public string BundledDataDirectory { get; }
     public string PersistenceFilePath { get; }
+    public string BundledPersistenceFilePath { get; }
+    public string DocumentationDirectory { get; }
     public bool IsDevelopmentMode { get; }
 
     public TemplateEnvironment(TemplateMetadata metadata)
@@ -14,12 +18,26 @@ public sealed class TemplateEnvironment
         ExecutableDirectory = Path.GetDirectoryName(Environment.ProcessPath) ?? AppContext.BaseDirectory;
         SolutionRoot = FindSolutionRoot(ExecutableDirectory);
         IsDevelopmentMode = SolutionRoot is not null;
-        RootDirectory = ResolveRootDirectory();
-        DataDirectory = Path.Combine(RootDirectory, metadata.DataDirectoryName);
+        ContentRootDirectory = ResolveContentRootDirectory();
+        StorageRootDirectory = ResolveStorageRootDirectory();
+        DataDirectory = Path.Combine(StorageRootDirectory, metadata.DataDirectoryName);
+        BundledDataDirectory = Path.Combine(ContentRootDirectory, metadata.DataDirectoryName);
         PersistenceFilePath = Path.Combine(DataDirectory, metadata.PersistenceFileName);
+        BundledPersistenceFilePath = Path.Combine(BundledDataDirectory, metadata.PersistenceFileName);
+        DocumentationDirectory = Path.Combine(ContentRootDirectory, metadata.DocumentationDirectoryName);
     }
 
-    private string ResolveRootDirectory()
+    private string ResolveContentRootDirectory()
+    {
+        if (SolutionRoot is not null)
+        {
+            return SolutionRoot;
+        }
+
+        return ExecutableDirectory;
+    }
+
+    private string ResolveStorageRootDirectory()
     {
         if (SolutionRoot is not null)
         {
