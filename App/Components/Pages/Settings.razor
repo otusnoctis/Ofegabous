@@ -1,13 +1,14 @@
 @page "/settings"
 @implements IDisposable
 @inject AppUpdateService UpdateService
+@inject UpdateLogStore UpdateLogStore
 
 <PageTitle>Settings</PageTitle>
 
 <header class="page-header">
     <h1 class="page-title">Settings</h1>
     <p class="page-summary">
-        Versioning state, update runtime status, and the current application session.
+        Versioning state, update runtime status, and recent update activity.
     </p>
 </header>
 
@@ -64,9 +65,9 @@ else
                 </p>
             }
 
-            @if (!_snapshot.IsDevMode)
-            {
-                <div class="mt-3 d-flex gap-2 flex-wrap">
+            <div class="mt-3 d-flex gap-2 flex-wrap">
+                @if (!_snapshot.IsDevMode)
+                {
                     @if (_snapshot.IsUpdateAvailable)
                     {
                         <button class="btn btn-primary"
@@ -81,16 +82,49 @@ else
                             @onclick="CheckForUpdatesAsync">
                         @(_isBusy ? "Checking..." : "Check again")
                     </button>
-                </div>
-            }
-        </section>
+                }
 
-        <section class="settings-card">
-            <h2>Session</h2>
-            <p class="mb-0">@_snapshot.StartupMessage</p>
-            @if (!string.IsNullOrWhiteSpace(_progressMessage))
+                <button class="btn btn-outline-primary"
+                        @onclick="ToggleLogAsync">
+                    @(_showUpdateLog ? "Hide log" : "View log")
+                </button>
+            </div>
+
+            @if (_showUpdateLog)
             {
-                <p class="text-primary fw-semibold mt-3 mb-0">@_progressMessage</p>
+                <div class="settings-log-panel">
+                    <div class="settings-log-header">
+                        <div>
+                            <h3>Update log</h3>
+                            <p class="text-body-secondary mb-0">Latest events stored in `logs/update-log.json`.</p>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(_progressMessage))
+                    {
+                        <p class="text-primary fw-semibold mt-3 mb-0">@_progressMessage</p>
+                    }
+
+                    @if (_updateLogEntries.Count == 0)
+                    {
+                        <p class="mb-0 mt-3">No update events have been logged yet.</p>
+                    }
+                    else
+                    {
+                        <div class="settings-log-list">
+                            @foreach (var entry in _updateLogEntries)
+                            {
+                                <article class="settings-log-entry">
+                                    <div class="settings-log-meta">
+                                        <time>@entry.TimestampUtc.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")</time>
+                                        <span>@entry.EventType</span>
+                                    </div>
+                                    <p class="settings-log-message">@entry.Message</p>
+                                </article>
+                            }
+                        </div>
+                    }
+                </div>
             }
         </section>
     </div>
@@ -98,7 +132,9 @@ else
 
 @code {
     private AppUpdateSnapshot? _snapshot;
+    private IReadOnlyList<UpdateLogEntry> _updateLogEntries = [];
     private bool _isBusy;
+    private bool _showUpdateLog;
     private string _progressMessage = string.Empty;
 
     protected override async Task OnInitializedAsync()
@@ -107,6 +143,7 @@ else
         UpdateService.SnapshotChanged += HandleSnapshotChanged;
         await UpdateService.EnsureStartupCheckAsync();
         _snapshot = UpdateService.GetSnapshot();
+        await RefreshUpdateLogAsync();
     }
 
     private async Task CheckForUpdatesAsync()
@@ -128,6 +165,7 @@ else
 
         _progressMessage = string.Empty;
         _isBusy = false;
+        await RefreshUpdateLogAsync();
     }
 
     private async Task UpdateNowAsync()
@@ -150,12 +188,31 @@ else
         _snapshot = result.Snapshot;
         _progressMessage = result.ProgressMessage;
         _isBusy = false;
+        await RefreshUpdateLogAsync();
     }
 
     private void HandleSnapshotChanged()
     {
         _snapshot = UpdateService.GetSnapshot();
-        _ = InvokeAsync(StateHasChanged);
+        _ = InvokeAsync(async () =>
+        {
+            await RefreshUpdateLogAsync();
+            StateHasChanged();
+        });
+    }
+
+    private async Task ToggleLogAsync()
+    {
+        _showUpdateLog = !_showUpdateLog;
+        if (_showUpdateLog)
+        {
+            await RefreshUpdateLogAsync();
+        }
+    }
+
+    private async Task RefreshUpdateLogAsync()
+    {
+        _updateLogEntries = await UpdateLogStore.LoadRecentAsync();
     }
 
     private string GetStatusSummary()

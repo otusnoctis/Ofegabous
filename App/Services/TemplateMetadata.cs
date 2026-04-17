@@ -11,6 +11,8 @@ public sealed class TemplateMetadata
     private const string DataDirectoryNameKey = "TemplateDataDirectoryName";
     private const string PersistenceFileNameKey = "TemplatePersistenceFileName";
     private const string DocumentationDirectoryNameKey = "TemplateDocumentationDirectoryName";
+    private const string LogsDirectoryNameKey = "TemplateLogsDirectoryName";
+    private const string UpdateLogFileNameKey = "TemplateUpdateLogFileName";
 
     public string DisplayName { get; } = ReadMetadata(DisplayNameKey, "Template App");
     public string ShortName { get; } = ReadMetadata(ShortNameKey, "Template");
@@ -19,6 +21,8 @@ public sealed class TemplateMetadata
     public string DataDirectoryName { get; } = ReadMetadata(DataDirectoryNameKey, "data");
     public string PersistenceFileName { get; } = ReadMetadata(PersistenceFileNameKey, "persistence.json");
     public string DocumentationDirectoryName { get; } = ReadMetadata(DocumentationDirectoryNameKey, "documentation");
+    public string LogsDirectoryName { get; } = ReadMetadata(LogsDirectoryNameKey, "logs");
+    public string UpdateLogFileName { get; } = ReadMetadata(UpdateLogFileNameKey, "update-log.json");
 
     private static string ReadMetadata(string key, string fallback)
     {

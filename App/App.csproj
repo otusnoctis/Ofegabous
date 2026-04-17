@@ -61,6 +61,8 @@
     <AssemblyMetadata Include="TemplateDataDirectoryName" Value="$(TemplateDataDirectoryName)" />
     <AssemblyMetadata Include="TemplatePersistenceFileName" Value="$(TemplatePersistenceFileName)" />
     <AssemblyMetadata Include="TemplateDocumentationDirectoryName" Value="$(TemplateDocumentationDirectoryName)" />
+    <AssemblyMetadata Include="TemplateLogsDirectoryName" Value="$(TemplateLogsDirectoryName)" />
+    <AssemblyMetadata Include="TemplateUpdateLogFileName" Value="$(TemplateUpdateLogFileName)" />
   </ItemGroup>
 
 </Project>

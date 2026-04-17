@@ -6,6 +6,7 @@ The template uses `Velopack` to check, download, and apply updates distributed t
 
 - `UpdateStartupState`
 - `AppUpdateService`
+- `UpdateLogStore`
 - the `Settings` page
 - the notification badge in the menu
 
@@ -23,6 +24,21 @@ The app takes the repository URL from assembly metadata, which in turn is fed fr
 4. The user can download and apply the new version.
 5. Velopack restarts the app with arguments that describe the applied update.
 
+## Update log
+
+The template stores update-related events in:
+
+- `logs/update-log.json`
+
+The log is intentionally:
+
+- JSON-based
+- file-backed
+- easy to inspect directly
+- separate from the sample persistence document
+
+The `Settings` page can display the most recent entries without needing a database.
+
 ## Visible state
 
 The `Settings` page shows:
@@ -31,7 +47,7 @@ The `Settings` page shows:
 - Velopack version
 - update repository
 - latest check state
-- session message
+- recent update log entries
 
 ## Important decision
 

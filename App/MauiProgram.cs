@@ -18,6 +18,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<SystemShellService>();
         builder.Services.AddSingleton<DocumentationService>();
         builder.Services.AddSingleton<PersistenceStore>();
+        builder.Services.AddSingleton<UpdateLogStore>();
         builder.Services.AddSingleton<UpdateStartupState>();
         builder.Services.AddSingleton<AppUpdateService>();
 

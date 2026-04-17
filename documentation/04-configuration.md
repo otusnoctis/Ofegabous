@@ -13,6 +13,8 @@ The template's derivable configuration is centralized in `Directory.Build.props`
 - `TemplateDataDirectoryName`
 - `TemplatePersistenceFileName`
 - `TemplateDocumentationDirectoryName`
+- `TemplateLogsDirectoryName`
+- `TemplateUpdateLogFileName`
 - `TemplateBrandColor`
 - `VelopackVersion`
 
@@ -29,6 +31,8 @@ The template's derivable configuration is centralized in `Directory.Build.props`
 - data folder name
 - persistence file name
 - documentation folder name
+- logs folder name
+- update log file name
 - update repository
 
 ### Basic branding

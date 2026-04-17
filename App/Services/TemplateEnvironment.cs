@@ -11,6 +11,8 @@ public sealed class TemplateEnvironment
     public string PersistenceFilePath { get; }
     public string BundledPersistenceFilePath { get; }
     public string DocumentationDirectory { get; }
+    public string LogsDirectory { get; }
+    public string UpdateLogFilePath { get; }
     public bool IsDevelopmentMode { get; }
 
     public TemplateEnvironment(TemplateMetadata metadata)
@@ -25,6 +27,8 @@ public sealed class TemplateEnvironment
         PersistenceFilePath = Path.Combine(DataDirectory, metadata.PersistenceFileName);
         BundledPersistenceFilePath = Path.Combine(BundledDataDirectory, metadata.PersistenceFileName);
         DocumentationDirectory = Path.Combine(ContentRootDirectory, metadata.DocumentationDirectoryName);
+        LogsDirectory = Path.Combine(StorageRootDirectory, metadata.LogsDirectoryName);
+        UpdateLogFilePath = Path.Combine(LogsDirectory, metadata.UpdateLogFileName);
     }
 
     private string ResolveContentRootDirectory()
