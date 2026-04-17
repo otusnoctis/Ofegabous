@@ -12,8 +12,6 @@
     <Nullable>enable</Nullable>
     <ApplicationTitle>$(TemplateAppDisplayName)</ApplicationTitle>
     <ApplicationId>$(TemplateAppId)</ApplicationId>
-    <ApplicationDisplayVersion>$(TemplateAppDisplayVersion)</ApplicationDisplayVersion>
-    <ApplicationVersion>$(TemplateAppVersion)</ApplicationVersion>
     <WindowsPackageType>None</WindowsPackageType>
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>

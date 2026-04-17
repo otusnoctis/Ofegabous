@@ -7,8 +7,6 @@ The template's derivable configuration is centralized in `Directory.Build.props`
 - `TemplateAppDisplayName`
 - `TemplateAppDescription`
 - `TemplateAppId`
-- `TemplateAppDisplayVersion`
-- `TemplateAppVersion`
 - `TemplateRepositoryUrl`
 - `TemplateAuthors`
 - `TemplatePackageId`
@@ -24,8 +22,6 @@ The template's derivable configuration is centralized in `Directory.Build.props`
 
 - visible window title
 - application id
-- visible version
-- packaging version
 - assembly metadata
 
 ### Template runtime

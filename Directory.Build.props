@@ -4,8 +4,6 @@
     <TemplateAppShortName>Ofegabous</TemplateAppShortName>
     <TemplateAppDescription>Windows template for local tools with .NET MAUI Blazor Hybrid, JSON persistence, and Velopack updates.</TemplateAppDescription>
     <TemplateAppId>com.companyname.ofegabous.template</TemplateAppId>
-    <TemplateAppDisplayVersion>0.0.1</TemplateAppDisplayVersion>
-    <TemplateAppVersion>1</TemplateAppVersion>
     <TemplateRepositoryUrl>https://github.com/your-org/ofegabous</TemplateRepositoryUrl>
     <TemplateAuthors>Your Team</TemplateAuthors>
     <TemplatePackageId>OfegabousTemplate</TemplatePackageId>
